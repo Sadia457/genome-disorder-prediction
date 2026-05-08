@@ -1,0 +1,25 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --border: rgba(0,0,0,0.08);
+  --text: #1a1916;
+  --text-muted: #6b6a66;
+  --primary: #01696f;
+  --primary-hover: #0c4e54;
+  --success-bg: #f0faf0;
+  --success-border: #a5d6a7;
+  --success-text: #1b5e20;
+  --error-bg: #fff0f0;
+  --error-border: #ffcdd2;
+  --error-text: #b71c1c;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+html { font-family: 'Satoshi', sans-serif; background: var(--bg); color: var(--text); }
+body { min-height: 100dvh; }
+input, button, select { font: inherit; }
