@@ -59,7 +59,8 @@ export default function App() {
     e.preventDefault();
     setLoading(true); setError(null); setResult(null);
     try {
-      const res = await axios.post("http://127.0.0.1:8000/predict", { features: formData });
+      const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const res = await axios.post(`${API}/predict`, { features: formData });
       setResult(res.data);
     } catch {
       setError("Cannot connect to backend. Make sure it is running on port 8000.");
