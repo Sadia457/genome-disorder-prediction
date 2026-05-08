@@ -6,7 +6,10 @@ app = FastAPI(title="Genome Disorder Prediction API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+   allow_origins=[
+        "http://localhost:5173",
+        "https://genome-disorder-prediction.vercel.app"  # ← your Vercel URL
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
