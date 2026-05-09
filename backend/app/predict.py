@@ -3,13 +3,17 @@ from pydantic import BaseModel
 import joblib
 import numpy as np
 import pandas as pd
+import os
 
 router = APIRouter()
 
-# Load model and features
-model = joblib.load("models/disorder_model.pkl")
-feature_names = joblib.load("models/feature_names.pkl")
-le_dict = joblib.load("models/label_encoders.pkl")
+# ✅ Fixed absolute paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model = joblib.load(os.path.join(BASE_DIR, "..", "models", "disorder_model.pkl"))
+feature_names = joblib.load(os.path.join(BASE_DIR, "..", "models", "feature_names.pkl"))
+le_dict = joblib.load(os.path.join(BASE_DIR, "..", "models", "label_encoders.pkl"))
+
 
 
 class PatientData(BaseModel):
@@ -19,8 +23,15 @@ class PatientData(BaseModel):
 @router.post("/predict")
 def predict(data: PatientData):
     try:
+        print("RAW FEATURES RECEIVED:", data.features)
+        print("TYPE:", type(data.features))
+
         # Build input dataframe
         input_df = pd.DataFrame([data.features])
+        print("FEATURE NAMES EXPECTED:", feature_names)
+        print("MISSING FROM INPUT:", [f for f in feature_names if f not in input_df.columns])
+        print("EXTRA IN INPUT:", [f for f in input_df.columns if f not in feature_names])
+        print("DATAFRAME COLUMNS:", input_df.columns.tolist())
 
         # Add missing columns with 0
         for col in feature_names:
@@ -42,15 +53,14 @@ def predict(data: PatientData):
             else:
                 input_df[col] = pd.to_numeric(input_df[col], errors="coerce").fillna(0)
 
-        # Predict — safely convert to int
+        # Predict
         raw_prediction = model.predict(input_df)[0]
         probability = float(model.predict_proba(input_df)[0].max())
 
-        # If prediction is already a string label, return directly
+        # Decode label
         if isinstance(raw_prediction, str):
             label = raw_prediction
         else:
-            # It's a number — decode using label encoder
             prediction_index = int(float(raw_prediction))
             target = "Genetic Disorder"
             if target in le_dict:
